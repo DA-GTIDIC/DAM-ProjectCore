@@ -42,7 +42,7 @@ application.add_route("/users/register", user_resources.ResourceRegisterUser())
 application.add_route("/users/show/{username}", user_resources.ResourceGetUserProfile())
 
 application.add_route("/events", event_resources.ResourceGetEvents())
-application.add_route("/events/show/{type:string}", event_resources.ResourceGetEventByType())
+application.add_route("/events/show/{type}", event_resources.ResourceGetEventByType())
 
 application.add_route("/events/show/{id:int}", event_resources.ResourceGetEvent())
 

@@ -53,12 +53,12 @@ class ResourceGetEvent(DAMCoreResource):
 
 class ResourceGetEventByType(DAMCoreResource):
     def on_get(self, req, resp, *args, **kwargs):
-        super(ResourceGetEvent, self).on_get(req, resp, *args, **kwargs)
+        super(ResourceGetEventByType, self).on_get(req, resp, *args, **kwargs)
 
         if "type" in kwargs:
             try:
                 data = []
-                response_events = self.db_session.query(Event).filter(Event.type.value == kwargs["type"]).all()
+                response_events = self.db_session.query(Event).filter(Event.type == kwargs["type"]).all()
                 for re in response_events:
                     data.append(re.json_model)
                 

@@ -54,6 +54,10 @@ class GenereEnum(enum.Enum):
     male = "M"
     female = "F"
 
+class RolEnum(enum.Enum):
+    freemium = "F"
+    premium = "P"
+
 
 class EventTypeEnum(enum.Enum):
     hackathon = "H"
@@ -169,6 +173,7 @@ class User(SQLAlchemyBase, JSONModel):
     genere = Column(Enum(GenereEnum), nullable=False)
     phone = Column(Unicode(50))
     photo = Column(Unicode(255))
+    rol = Column(Enum(RolEnum), nullable=False)
     events_owner = relationship("Event", back_populates="owner", cascade="all, delete-orphan")
     events_enrolled = relationship("Event", back_populates="registered")
 
@@ -179,6 +184,7 @@ class User(SQLAlchemyBase, JSONModel):
             "username": self.username,
             "genere": self.genere.value,
             "photo": self.photo,
+            "rol": self.rol
         }
 
     @hybrid_property

@@ -19,18 +19,6 @@ import string
 mylogger = logging.getLogger(__name__)
 settings.configure_logging()
 
-def randomGenre():
-    if bool(random.getrandbits(1)):
-        return GenereEnum.female
-    else: 
-        return GenereEnum.male
-
-def randomRol():
-    if bool(random.getrandbits(1)):
-        return RolEnum.freemium
-    else: 
-        return RolEnum.premium
-
 def randomString(length):
     password = ''.join([random.choice( string.ascii_letters + string.digits) for n in range(length)])
     return password
@@ -83,8 +71,8 @@ if __name__ == "__main__":
             name="user",
             surname=str(i),
             birthdate=datetime.datetime(random.randint(1920, 2021), random.randint(1, 12), random.randint(1, 31)),
-            genere=randomGenre(),
-            rol=randomRol(),
+            genere=random.choice(list(GenereEnum)),
+            rol=random.choice(list(RolEnum))
         )
         aux_user.set_password(randomString(random.randint(4,8)))
         aux_user.tokens.append(UserToken(token=randomString(50)))

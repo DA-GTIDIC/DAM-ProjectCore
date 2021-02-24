@@ -184,7 +184,7 @@ class User(SQLAlchemyBase, JSONModel):
             "username": self.username,
             "genere": self.genere.value,
             "photo": self.photo,
-            "rol": self.rol
+            "rol": self.rol.value
         }
 
     @hybrid_property
@@ -224,5 +224,6 @@ class User(SQLAlchemyBase, JSONModel):
                 settings.DATE_DEFAULT_FORMAT) if self.birthdate is not None else self.birthdate,
             "genere": self.genere.value,
             "phone": self.phone,
-            "photo": self.photo_url
+            "photo": self.photo_url,
+            "rol":self.rol.value
         }

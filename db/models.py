@@ -61,6 +61,11 @@ class EventTypeEnum(enum.Enum):
     livecoding = "LC"
 
 
+class PagoTypeEnum(enum.Enum):
+    Premium = "Pro"
+    Freemium = "Free"
+
+
 class EventStatusEnum(enum.Enum):
     open = "O"
     closed = "C"
@@ -84,6 +89,7 @@ class Event(SQLAlchemyBase, JSONModel):
     id = Column(Integer, primary_key=True)
     created_at = Column(DateTime, default=datetime.datetime.now, nullable=False)
     name = Column(Unicode(255), nullable=False)
+    pago = Column(Enum(PagoTypeEnum))
     description = Column(UnicodeText)
     type = Column(Enum(EventTypeEnum))
     poster = Column(Unicode(255))
@@ -113,6 +119,11 @@ class Event(SQLAlchemyBase, JSONModel):
         else:
             return EventStatusEnum.undefined
 
+    '''
+    @hybrid_property
+    def pago(self):
+        return 
+    '''
     @status.expression
     def status(cls):
         current_datetime = datetime.datetime.now()
@@ -134,6 +145,7 @@ class Event(SQLAlchemyBase, JSONModel):
             "id": self.id,
             "created_at": self.created_at.strftime(settings.DATETIME_DEFAULT_FORMAT),
             "name": self.name,
+            "pago": self.pago,
             "description": self.description,
             "poster_url": self.poster_url,
             "type": self.type.value,
@@ -160,6 +172,7 @@ class User(SQLAlchemyBase, JSONModel):
     id = Column(Integer, primary_key=True)
     created_at = Column(DateTime, default=datetime.datetime.now, nullable=False)
     username = Column(Unicode(50), nullable=False, unique=True)
+    pago = Column(Enum(PagoTypeEnum))
     password = Column(UnicodeText, nullable=False)
     email = Column(Unicode(255), nullable=False)
     tokens = relationship("UserToken", back_populates="user", cascade="all, delete-orphan")
@@ -211,6 +224,7 @@ class User(SQLAlchemyBase, JSONModel):
         return {
             "created_at": self.created_at.strftime(settings.DATETIME_DEFAULT_FORMAT),
             "username": self.username,
+            "pago": self.pago,
             "email": self.email,
             "name": self.name,
             "surname": self.surname,

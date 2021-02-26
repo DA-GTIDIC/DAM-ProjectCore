@@ -45,8 +45,8 @@ class ResourceRegisterUser(DAMCoreResource):
             except ValueError:
                 raise falcon.HTTPBadRequest(description=messages.genere_invalid)
 
-
             aux_user.username = req.media["username"]
+            aux_user.pago = req.media["pago"]
             aux_user.password = req.media["password"]
             aux_user.email = req.media["email"]
             aux_user.name = req.media["name"]

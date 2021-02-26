@@ -9,7 +9,7 @@ from sqlalchemy.sql import text
 
 import db
 import settings
-from db.models import SQLAlchemyBase, User, GenereEnum, UserToken, Event, EventTypeEnum
+from db.models import SQLAlchemyBase, User, PagoTypeEnum, GenereEnum, UserToken, Event, EventTypeEnum
 from settings import DEFAULT_LANGUAGE
 
 # LOGGING
@@ -37,14 +37,13 @@ if __name__ == "__main__":
     mylogger.info("Creating database...")
     SQLAlchemyBase.metadata.create_all(db.DB_ENGINE)
 
-
-
     # -------------------- CREATE USERS --------------------
     mylogger.info("Creating default users...")
     # noinspection PyArgumentList
     user_admin = User(
         created_at=datetime.datetime(2020, 1, 1, 0, 1, 1),
         username="admin",
+        pago=PagoTypeEnum.Freemium,
         email="admin@damcore.com",
         name="Administrator",
         surname="DamCore",
@@ -53,9 +52,10 @@ if __name__ == "__main__":
     user_admin.set_password("DAMCoure")
 
     # noinspection PyArgumentList
-    user_1= User(
+    user_1 = User(
         created_at=datetime.datetime(2020, 1, 1, 0, 1, 1),
         username="usuari1",
+        pago=PagoTypeEnum.Freemium,
         email="usuari1@gmail.com",
         name="usuari",
         surname="1",
@@ -69,6 +69,7 @@ if __name__ == "__main__":
     user_2 = User(
         created_at=datetime.datetime(2020, 1, 1, 0, 1, 1),
         username="user2",
+        pago=PagoTypeEnum.Premium,
         email="user2@gmail.com",
         name="user",
         surname="2",
@@ -83,7 +84,39 @@ if __name__ == "__main__":
     db_session.add(user_2)
 
 
+# -------------------- CREATE USERS PREMIUM I FREMIUM --------------------
 
+    for i in range(0, 10):
+        f = str(i)+"usfree"
+        p = str(i)+"uspro"
+        # noinspection PyArgumentList
+        user_free = User(
+            created_at=datetime.datetime(2020, 1, 1, 0, 1, 1),
+            username=f,
+            pago=PagoTypeEnum.Freemium,
+            email="ushwefvyhcvii1@gmail.com",
+            name="uskkhjdji",
+            surname="free",
+            birthdate=datetime.datetime(1989, 1, 1),
+            genere=GenereEnum.male
+        )
+        user_free.set_password("a1s2d3f4")
+        db_session.add(user_free)
+
+        # noinspection PyArgumentList
+        user_pre = User(
+            created_at=datetime.datetime(2020, 1, 1, 0, 1, 1),
+            username=p,
+            pago=PagoTypeEnum.Premium,
+            email="usjhwefvwuvi1@gmail.com",
+            name="uswefhwveuivi",
+            surname="pro",
+            birthdate=datetime.datetime(1989, 1, 1),
+            genere=GenereEnum.male
+        )
+        user_pre.set_password("hellio")
+        db_session.add(user_pre)
+   
     # -------------------- CREATE EVENTS --------------------
 
     day_period = datetime.timedelta(days=1)
@@ -95,7 +128,7 @@ if __name__ == "__main__":
         type=EventTypeEnum.hackathon,
         start_date=datetime.datetime.now() + (day_period * 3),
         finish_date=datetime.datetime.now() + (day_period * 5),
-        owner_id = 0,
+        owner_id=0,
         poster="logo.png",
         registered=[user_1, user_2]
     )
@@ -125,8 +158,6 @@ if __name__ == "__main__":
     db_session.add(event_hackatoon)
     db_session.add(event_livecoding)
     db_session.add(event_lanparty)
-
-
 
     db_session.commit()
     db_session.close()

@@ -57,7 +57,7 @@ if __name__ == "__main__":
         genere=GenereEnum.female,
         rol=RolEnum.premium,
     )
-    user_admin.set_password("DAMCoure")
+    user_admin.set_password("DAMCore")
 
     db_session.add(user_admin)
 
@@ -65,12 +65,12 @@ if __name__ == "__main__":
 
     for i in range(1, 20):
         aux_user = User(
-            created_at=datetime.datetime(random.randint(2000, 2021), random.randint(1, 12), random.randint(1, 31)),
+            created_at=datetime.datetime.now(),
             username="user"+str(i),
             email="user"+str(i)+"@gmail.com",
             name="user",
             surname=str(i),
-            birthdate=datetime.datetime(random.randint(1920, 2021), random.randint(1, 12), random.randint(1, 31)),
+            birthdate=datetime.datetime(random.randint(1920, 2021), random.randint(1, 12), random.randint(1, 28)),
             genere=random.choice(list(GenereEnum)),
             rol=random.choice(list(RolEnum))
         )

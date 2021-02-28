@@ -8,6 +8,7 @@ _ = gettext.gettext
 authorization_header_required = _("Authorization header required")
 error_saving_user_token = _("Error when saving the user token")
 error_removing_user_token = _("Error removing the user token")
+error_removing_account = _("Error removing the account")
 genere_invalid = _("Invalid genere")
 rol_invalid = _("Invalid rol")
 maximum_tokens_exceded = _("The user has reached the maximum number of tokens allowed")

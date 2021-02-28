@@ -110,3 +110,18 @@ class ResourceAccountUpdateProfileImage(DAMCoreResource):
         self.db_session.commit()
 
         resp.status = falcon.HTTP_200
+
+@falcon.before(requires_auth)
+class ResourceAccountDelete(DAMCoreResource):
+    def on_post(self, req, resp, *args, **kwargs):
+        super(ResourceAccountDelete, self).on_get(req, resp, *args, **kwargs)
+        current_user = req.context["auth_user"]
+
+        try:
+            self.db_session.delete(current_user)
+            self.db_session.commit()
+
+            resp.status = falcon.HTTP_200
+        except Exception as e:
+            mylogger.critical("{}:{}".format(messages.error_removing_account, e))
+            raise falcon.HTTPInternalServerError()

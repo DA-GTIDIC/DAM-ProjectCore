@@ -11,11 +11,11 @@ from falcon.media.validators import jsonschema
 
 import messages
 import settings
-from db.models import User, UserToken
+from db.models import User, UserToken, GenereEnum, RolEnum
 from hooks import requires_auth
 from resources import utils
 from resources.base_resources import DAMCoreResource
-from resources.schemas import SchemaUserToken
+from resources.schemas import SchemaUserToken, SchemaUpdateUser
 from settings import STATIC_DIRECTORY
 
 mylogger = logging.getLogger(__name__)
@@ -106,6 +106,73 @@ class ResourceAccountUpdateProfileImage(DAMCoreResource):
 
         # Update db model
         current_user.photo = filename
+        self.db_session.add(current_user)
+        self.db_session.commit()
+
+        resp.status = falcon.HTTP_200
+
+@falcon.before(requires_auth)
+class ResourceAccountDelete(DAMCoreResource):
+    def on_post(self, req, resp, *args, **kwargs):
+        super(ResourceAccountDelete, self).on_get(req, resp, *args, **kwargs)
+        current_user = req.context["auth_user"]
+
+        try:
+            self.db_session.delete(current_user)
+            self.db_session.commit()
+
+            resp.status = falcon.HTTP_200
+        except Exception as e:
+            mylogger.critical("{}:{}".format(messages.error_removing_account, e))
+            raise falcon.HTTPInternalServerError()
+
+@falcon.before(requires_auth)
+class ResourceAccountUpdate(DAMCoreResource):
+    @jsonschema.validate(SchemaUpdateUser)
+    def on_post(self, req, resp, *args, **kwargs):
+        super().on_post(req, resp, *args, **kwargs)
+        current_user = req.context["auth_user"]
+        
+        if "username" in req.media:
+            selected_username = req.media["username"]
+            if self.db_session.query(User).filter(User.username == selected_username).one_or_none() is None:
+                current_user.username = selected_username
+            else:
+                raise falcon.HTTPUnauthorized(description=messages.error_username_in_use)
+
+        if "password" in req.media:
+            current_user.password = req.media["password"]
+
+        if "email" in req.media:
+            selected_email = req.media["email"]
+            if self.db_session.query(User).filter(User.email == selected_email).one_or_none() is None:
+                current_user.email = selected_email
+            else:
+                raise falcon.HTTPUnauthorized(description=messages.error_email_in_use)
+
+        if "name" in req.media:
+            current_user.name = req.media["name"]
+
+        if "surname" in req.media:
+            current_user.surname = req.media["surname"]
+
+        if "genere" in req.media:
+            try:
+                selected_genere = GenereEnum(req.media["genere"].upper())
+            except ValueError:
+                raise falcon.HTTPBadRequest(description=messages.genere_invalid)
+
+            current_user.genere = selected_genere
+
+        if "rol" in req.media:
+            try:
+                aux_rol = RolEnum(req.media["rol"].upper())            
+            except ValueError:
+                raise falcon.HTTPBadRequest(description=messages.rol_invalid)
+
+            current_user.rol = req.media["rol"]
+
+
         self.db_session.add(current_user)
         self.db_session.commit()
 

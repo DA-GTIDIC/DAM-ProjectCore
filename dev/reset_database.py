@@ -9,13 +9,19 @@ from sqlalchemy.sql import text
 
 import db
 import settings
-from db.models import SQLAlchemyBase, User, GenereEnum, UserToken, Event, EventTypeEnum
+from db.models import SQLAlchemyBase, User, GenereEnum, RolEnum, UserToken, Event, EventTypeEnum
 from settings import DEFAULT_LANGUAGE
+
+import random
+import string
 
 # LOGGING
 mylogger = logging.getLogger(__name__)
 settings.configure_logging()
 
+def randomString(length):
+    password = ''.join([random.choice( string.ascii_letters + string.digits) for n in range(length)])
+    return password
 
 def execute_sql_file(sql_file):
     sql_folder_path = os.path.join(os.path.dirname(__file__), "sql")
@@ -48,40 +54,33 @@ if __name__ == "__main__":
         email="admin@damcore.com",
         name="Administrator",
         surname="DamCore",
-        genere=GenereEnum.male,
+        genere=GenereEnum.female,
+        rol=RolEnum.premium,
     )
-    user_admin.set_password("DAMCoure")
-
-    # noinspection PyArgumentList
-    user_1= User(
-        created_at=datetime.datetime(2020, 1, 1, 0, 1, 1),
-        username="usuari1",
-        email="usuari1@gmail.com",
-        name="usuari",
-        surname="1",
-        birthdate=datetime.datetime(1989, 1, 1),
-        genere=GenereEnum.male
-    )
-    user_1.set_password("a1s2d3f4")
-    user_1.tokens.append(UserToken(token="656e50e154865a5dc469b80437ed2f963b8f58c8857b66c9bf"))
-
-    # noinspection PyArgumentList
-    user_2 = User(
-        created_at=datetime.datetime(2020, 1, 1, 0, 1, 1),
-        username="user2",
-        email="user2@gmail.com",
-        name="user",
-        surname="2",
-        birthdate=datetime.datetime(2017, 1, 1),
-        genere=GenereEnum.male,
-    )
-    user_2.set_password("r45tgt")
-    user_2.tokens.append(UserToken(token="0a821f8ce58965eadc5ef884cf6f7ad99e0e7f58f429f584b2"))
+    user_admin.set_password("DAMCore")
 
     db_session.add(user_admin)
-    db_session.add(user_1)
-    db_session.add(user_2)
 
+    users = []
+
+    for i in range(1, 20):
+        aux_user = User(
+            created_at=datetime.datetime.now(),
+            username="user"+str(i),
+            email="user"+str(i)+"@gmail.com",
+            name="user",
+            surname=str(i),
+            birthdate=datetime.datetime(random.randint(1920, 2021), random.randint(1, 12), random.randint(1, 28)),
+            genere=random.choice(list(GenereEnum)),
+            rol=random.choice(list(RolEnum))
+        )
+        aux_user.set_password(randomString(random.randint(4,8)))
+        aux_user.tokens.append(UserToken(token=randomString(50)))
+
+        users.append(aux_user)
+        
+    for user in users:
+        db_session.add(user)
 
 
     # -------------------- CREATE EVENTS --------------------
@@ -97,7 +96,7 @@ if __name__ == "__main__":
         finish_date=datetime.datetime.now() + (day_period * 5),
         owner_id = 0,
         poster="logo.png",
-        registered=[user_1, user_2]
+        registered=users
     )
 
     event_livecoding = Event(
@@ -108,7 +107,7 @@ if __name__ == "__main__":
         start_date=datetime.datetime.now() - (day_period * 5),
         finish_date=datetime.datetime.now() - (day_period * 4),
         owner_id=1,
-        registered=[user_2]
+        registered=[users[4]]
     )
 
     event_lanparty = Event(

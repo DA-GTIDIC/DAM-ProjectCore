@@ -50,8 +50,8 @@ if __name__ == "__main__":
         genere=GenereEnum.male,
     )
     user_admin.set_password("DAMCoure")
+    db_session.add(user_admin)
 
-    # noinspection PyArgumentList
     user_1 = User(
         created_at=datetime.datetime(2020, 1, 1, 0, 1, 1),
         username="usuari1",
@@ -64,6 +64,7 @@ if __name__ == "__main__":
     )
     user_1.set_password("a1s2d3f4")
     user_1.tokens.append(UserToken(token="656e50e154865a5dc469b80437ed2f963b8f58c8857b66c9bf"))
+    db_session.add(user_1)
 
     # noinspection PyArgumentList
     user_2 = User(
@@ -78,71 +79,41 @@ if __name__ == "__main__":
     )
     user_2.set_password("r45tgt")
     user_2.tokens.append(UserToken(token="0a821f8ce58965eadc5ef884cf6f7ad99e0e7f58f429f584b2"))
-
-    db_session.add(user_admin)
-    db_session.add(user_1)
     db_session.add(user_2)
 
-
-# -------------------- CREATE USERS PREMIUM I FREMIUM --------------------
-
+    # -------------------- CREATE USERS PREMIUM I FREMIUM --------------------
     for i in range(0, 10):
-        f = str(i)+"usfree"
-        p = str(i)+"uspro"
+        f = str(i) + "usfree"
+
         # noinspection PyArgumentList
         user_free = User(
-            created_at=datetime.datetime(2020, 1, 1, 0, 1, 1),
             username=f,
             pago=PagoTypeEnum.Freemium,
-            email="ushwefvyhcvii1@gmail.com",
-            name="uskkhjdji",
+            email=f+"@gmail.com",
+            name=f,
             surname="free",
             birthdate=datetime.datetime(1989, 1, 1),
             genere=GenereEnum.male
         )
-        user_free.set_password("a1s2d3f4")
+        user_free.set_password(f+"pass")
         db_session.add(user_free)
 
+        p = str(i) + "uspro"
         # noinspection PyArgumentList
         user_pre = User(
-            created_at=datetime.datetime(2020, 1, 1, 0, 1, 1),
             username=p,
             pago=PagoTypeEnum.Premium,
-            email="usjhwefvwuvi1@gmail.com",
-            name="uswefhwveuivi",
+            email=p+"@gmail.com",
+            name=p+"user",
             surname="pro",
             birthdate=datetime.datetime(1989, 1, 1),
             genere=GenereEnum.male
         )
-        user_pre.set_password("hellio")
+        user_pre.set_password(p+"pass")
         db_session.add(user_pre)
-   
     # -------------------- CREATE EVENTS --------------------
 
     day_period = datetime.timedelta(days=1)
-
-    event_hackatoon = Event(
-        created_at=datetime.datetime.now(),
-        name="event1",
-        description="description 1",
-        type=EventTypeEnum.hackathon,
-        start_date=datetime.datetime.now() + (day_period * 3),
-        finish_date=datetime.datetime.now() + (day_period * 5),
-        owner_id=0,
-        poster="logo.png",
-        registered=[user_1, user_2]
-    )
-
-    event_livecoding = Event(
-        created_at=datetime.datetime.now(),
-        name="event2",
-        description="descr2",
-        type=EventTypeEnum.livecoding,
-        start_date=datetime.datetime.now() - (day_period * 5),
-        finish_date=datetime.datetime.now() - (day_period * 4),
-        owner_id=1,
-        registered=[user_2]
-    )
 
     event_lanparty = Event(
         created_at=datetime.datetime.now(),
@@ -154,10 +125,33 @@ if __name__ == "__main__":
         owner_id=1,
         registered=[]
     )
+    db_session.add(event_lanparty)
+
+    event_hackatoon = Event(
+        created_at=datetime.datetime.now(),
+        name="event1",
+        description="description 1",
+        type=EventTypeEnum.hackathon,
+        start_date=datetime.datetime.now() + (day_period * 3),
+        finish_date=datetime.datetime.now() + (day_period * 5),
+        owner_id=0,
+        poster="logo.png",
+        registered=[user_1]
+    )
 
     db_session.add(event_hackatoon)
+
+    event_livecoding = Event(
+        created_at=datetime.datetime.now(),
+        name="event2",
+        description="descr2",
+        type=EventTypeEnum.livecoding,
+        start_date=datetime.datetime.now() - (day_period * 5),
+        finish_date=datetime.datetime.now() - (day_period * 4),
+        owner_id=1,
+        registered=[user_1,user_2]
+    )
     db_session.add(event_livecoding)
-    db_session.add(event_lanparty)
 
     db_session.commit()
     db_session.close()

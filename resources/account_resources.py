@@ -88,11 +88,11 @@ class ResourceAccountUserProfile(DAMCoreResource):
         resp.media = current_user.json_model
         resp.status = falcon.HTTP_200
 
+
 @falcon.before(requires_auth)
 class ResourceAccountUpdateProfileImage(DAMCoreResource):
     def on_post(self, req, resp, *args, **kwargs):
         super(ResourceAccountUpdateProfileImage, self).on_post(req, resp, *args, **kwargs)
-
 
         # Get the user from the token
         current_user = req.context["auth_user"]

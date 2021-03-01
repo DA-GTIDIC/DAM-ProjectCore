@@ -61,6 +61,11 @@ class EventTypeEnum(enum.Enum):
     livecoding = "LC"
 
 
+class PagoTypeEnum(enum.Enum):
+    Premium = "P"
+    Freemium = "F"
+
+
 class EventStatusEnum(enum.Enum):
     open = "O"
     closed = "C"
@@ -160,6 +165,7 @@ class User(SQLAlchemyBase, JSONModel):
     id = Column(Integer, primary_key=True)
     created_at = Column(DateTime, default=datetime.datetime.now, nullable=False)
     username = Column(Unicode(50), nullable=False, unique=True)
+    pago = Column(Enum(PagoTypeEnum), nullable=False)
     password = Column(UnicodeText, nullable=False)
     email = Column(Unicode(255), nullable=False)
     tokens = relationship("UserToken", back_populates="user", cascade="all, delete-orphan")
@@ -177,6 +183,7 @@ class User(SQLAlchemyBase, JSONModel):
         return {
             "created_at": self.created_at.strftime(settings.DATETIME_DEFAULT_FORMAT),
             "username": self.username,
+            "pago": self.pago.value,
             "genere": self.genere.value,
             "photo": self.photo,
         }
@@ -211,6 +218,7 @@ class User(SQLAlchemyBase, JSONModel):
         return {
             "created_at": self.created_at.strftime(settings.DATETIME_DEFAULT_FORMAT),
             "username": self.username,
+            "pago": self.pago.value,
             "email": self.email,
             "name": self.name,
             "surname": self.surname,
